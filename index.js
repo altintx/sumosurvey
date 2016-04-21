@@ -4,8 +4,8 @@ var Promise = require("rsvp").Promise;
 
 var server = express();
 
-express.static("public");
-
+server.use(express.static("public"));
+server.use(express.static("node_modules/rsvp/dist"));
 
 // db.Question, db.Answer, db.Response
 server.get("/api/questions", function(req, res) {
