@@ -17,7 +17,10 @@ function getQuestion(id) {
 
 function start() {
 	getNextQuestion().then(function(q) {
-		console.log(q);
+		if (q)
+			console.log(q);
+		else
+			"There are no more questions";
 	});
 }
 
@@ -28,9 +31,12 @@ function getNextQuestion() {
 			var unanswered = questions.filter(function(q) {
 				return answered.indexOf(q.id) == -1;
 			});
-			var question = unanswered[Math.floor(Math.random() * unanswered.length)];
-
-			getQuestion(question.id).then(done);
+			if (unanswered.length) {
+				var question = unanswered[Math.floor(Math.random() * unanswered.length)];
+				getQuestion(question.id).then(done);
+			} else {
+				done(false);
+			}
 		});
 	});
 }
