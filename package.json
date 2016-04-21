@@ -11,6 +11,7 @@
   "dependencies": {
     "express": "^4.13.4",
     "mysql": "^2.10.2",
+    "rsvp": "^3.2.1",
     "sequelize": "^3.21.0"
   },
   "devDependencies": {
