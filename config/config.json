@@ -1,0 +1,13 @@
+{
+  "development": {
+    "username": "sumo",
+    "password": "sumo",
+    "database": "sumo",
+    "host": "localhost",
+    "dialect": "mysql"
+  },
+  "admin": {
+  	"user": "admin",
+  	"password": "demo"
+  }
+}
