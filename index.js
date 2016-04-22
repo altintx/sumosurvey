@@ -2,7 +2,6 @@ var express = require("express");
 var db = require('./models');
 var Promise = require("rsvp").Promise;
 var bodyParser = require('body-parser')
-var authentication = require('express-authentication');
 var basicAuth = require('basic-auth');
 
 var server = express();
@@ -49,7 +48,6 @@ server.get("/api/questions", function(req, res) {
 server.use("/admin", auth(true), express.static("admin"));
 
 server.get("/api/questions/:id", function(req, res) {
-	console.log(req.authentication);
 	db.Question.findById(req.params.id).then(function(question) {
 		if (question)
 			db.Answer.findAll({ where: { questionId: question.id } }).then(function(answers) {
