@@ -1,27 +1,15 @@
-function guid() { // from http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
-	function s4() {
-		return Math.floor((1 + Math.random()) * 0x10000)
-		.toString(16)
-		.substring(1);
-	}
-	return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
-}
-
 function getAnswered() {
 	var a = localStorage.getItem("answered");
-	return a || [];	
-}
-
-function getQuestions() {
-	return $.getJSON({
-		url: "/api/questions"
-	});
-}
-
-function getQuestion(id) {
-	return $.getJSON({
-		url: "/api/questions/" + id
-	});
+	if (a) {
+		try {
+			a = JSON.parse(a);
+		} catch (e) {
+			a = [];
+		}
+	} else {
+		a = [];
+	}
+	return a;
 }
 
 function submitResponse(questionDom) {
@@ -41,7 +29,7 @@ function submitResponse(questionDom) {
 			dataType: "json"
 		}).then(function(response) {
 			if (response.success) {
-				localStorage.setItem("answered", getAnswered().concat([questionDom.question.id]));
+				localStorage.setItem("answered", JSON.stringify(getAnswered().concat([questionDom.question.id])));
 				start(); // get next question
 			} else {
 				console.error(response);
