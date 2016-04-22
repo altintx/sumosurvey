@@ -1,11 +1,17 @@
 var express = require("express");
 var db = require('./models');
 var Promise = require("rsvp").Promise;
+var bodyParser = require('body-parser')
 
 var server = express();
 
 server.use(express.static("public"));
 server.use(express.static("node_modules/rsvp/dist"));
+
+server.use( bodyParser.json() );       // to support JSON-encoded bodies
+server.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: true
+})); 
 
 // db.Question, db.Answer, db.Response
 server.get("/api/questions", function(req, res) {
@@ -21,6 +27,7 @@ server.get("/api/questions/:id", function(req, res) {
 				res.send({
 					success: true,
 					question: question.get().text,
+					id: question.id,
 					answers: answers.map(function(a) {
 						return a.get();
 					})
@@ -33,19 +40,18 @@ server.get("/api/questions/:id", function(req, res) {
 });
 
 server.post("/api/questions", function(req, res) {
-	if (!("question" in req.params && "answers" in req.params && typeof params.answers == "Object")) {
+	if (!("question" in req.body && "answers" in req.body && typeof req.body.answers == "Object")) {
 		return res.send({
 			success: false,
 			message: "Send " + JSON.stringify({ "question": "Question Text", "Answers": [] })
 		});
-
 	};
 	var questionId = 0;
 	db.Question.create({
-		text: req.params.question
+		text: req.body.question
 	}).then(function(q) {
 		questionId = q.id;
-		return Promise.all(req.params.answers.map(function(answer) {
+		return Promise.all(req.body.answers.map(function(answer) {
 			return db.Answer.create({
 				text: answer,
 				questionId: questionId
@@ -55,5 +61,25 @@ server.post("/api/questions", function(req, res) {
 		res.redirect("/api/questions/" + questionId);
 	});
 });
+
+server.post("/api/respond", function(req, res) {
+	if (!("questionId" in req.body && "answerId" in req.body && "user" in req.body)) {
+		console.log(req.body);
+		return res.send({
+			success: false,
+			message: "Send " + JSON.stringify({ "questionId": "number", "answerId": "number", "user": "{guid}" })
+		});
+	};
+	db.Response.create({
+		questionId: req.body.questionId,
+		answerId: req.body.answerId,
+		user: req.body.userId
+	}).then(function(record) {
+		res.send({
+			success: true,
+			record: record
+		});
+	})
+})
 
 server.listen(3000);
